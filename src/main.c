@@ -1,5 +1,49 @@
 #include "main.h"
 
+void initialize_server(int *server_fd, struct sockaddr_in *server_addr, socklen_t *server_addr_size) {
+
+    // Initialize the server_addr struct
+    server_addr->sin_family = DOMAIN_IPV4;
+    server_addr->sin_addr.s_addr = LOOPBACK_ADDRESS;
+    server_addr->sin_port = PORT;
+
+    *server_addr_size = sizeof(*server_addr);
+
+    // Create the socket
+    *server_fd = socket(DOMAIN_IPV4, PROTOCOL_TCP, PROTOCOL_NUMBER);
+    if (server_fd < 0)
+        handle_error("Server socket creation failed");
+
+    // Bind IP address and port to socket
+    if (bind(*server_fd, (struct sockaddr *)&server_addr, *server_addr_size) < 0)
+        handle_error("Server socket bind failed");
+
+    // Start listening for incoming connections
+    if (listen(*server_fd, MAX_CONNECTION_BACKLOG) < 0)
+        handle_error("Server socket listening failed");
+
+    printf("Listening for incoming connections on: %s, port: %d\n",
+            inet_ntoa(server_addr->sin_addr), // Converts the ip address from network byte order to host byte order (not thread-safe)
+            ntohs(server_addr->sin_port)); // Converts the port from network byte order to host byte order
+}
+
+void handle_peer_connections(int *peer_fd) {
+    int server_fd;
+    struct sockaddr_in server_addr;
+    socklen_t server_addr_size;
+    initialize_server(&server_fd, &server_addr, &server_addr_size);
+
+    // Accept incoming connection
+    *peer_fd = accept(server_fd,
+    (struct sockaddr *)&server_addr,
+    &server_addr_size);
+
+    if (peer_fd < 0) {
+        close(*peer_fd);
+        handle_error("Peer connection failed");
+    }
+}
+
 int main() {
     int server_fd, client_fd; // Server File Descriptor & Client File Descriptor
     struct sockaddr_in server_addr; // Creates an instance of the sockaddr_in struct

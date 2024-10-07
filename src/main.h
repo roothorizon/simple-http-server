@@ -19,7 +19,7 @@
 
 #define handle_error(message) do { perror(message); exit(EXIT_FAILURE); } while(0)
 
-//void initialize_server();
-//void handle_client_connections();
+void initialize_server();
+void handle_peer_connections();
 
 #endif
