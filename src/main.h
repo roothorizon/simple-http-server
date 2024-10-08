@@ -21,5 +21,7 @@
 
 void initialize_server();
 void handle_peer_connections();
+void handle_request();
+void handle_response();
 
 #endif

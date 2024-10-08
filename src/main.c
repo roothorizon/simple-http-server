@@ -1,5 +1,45 @@
 #include "main.h"
 
+void handle_request(int *peer_fd) {
+    char buffer[BUFFER_SIZE] = {0};
+
+    read(*peer_fd, &buffer, BUFFER_SIZE);
+        printf("%.*s", BUFFER_SIZE, buffer);
+        char method[10], path[100];
+        sscanf(buffer, "%s %s", method, path);
+
+        if (strcmp(method, "GET") == 0) {
+            if (strcmp(path, "/") == 0) {
+                strcpy(path, "/index.html");
+            }
+            char full_path[200] = "../www";
+            strcat(full_path, path);
+
+            FILE *file = fopen(full_path, "r");
+            if (file != NULL) {
+                char response[BUFFER_SIZE] = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+                send(*peer_fd, response, strlen(response), 0);
+                printf("%.*s", BUFFER_SIZE, response);
+
+                char file_buffer[BUFFER_SIZE];
+                while (fgets(file_buffer, BUFFER_SIZE, file)) {
+                    send(*peer_fd, file_buffer, strlen(file_buffer), 0);
+                }
+                fclose(file);
+            } else {
+                char *not_found = "HTTP/1.1 404 Not Found\r\n\r\n";
+                send(*peer_fd, not_found, strlen(not_found), 0);
+                printf("%.*s", strlen(not_found), not_found);
+            }
+        }
+
+        close(*peer_fd);
+}
+
+void handle_response(int *peer_fd) {
+
+}
+
 void initialize_server(int *server_fd, struct sockaddr_in *server_addr, socklen_t *server_addr_size) {
 
     // Initialize the server_addr struct
@@ -15,12 +55,16 @@ void initialize_server(int *server_fd, struct sockaddr_in *server_addr, socklen_
         handle_error("Server socket creation failed");
 
     // Bind IP address and port to socket
-    if (bind(*server_fd, (struct sockaddr *)&server_addr, *server_addr_size) < 0)
+    if (bind(*server_fd, (struct sockaddr *)&server_addr, *server_addr_size) < 0) {
+        close(*server_fd);
         handle_error("Server socket bind failed");
+    }
 
     // Start listening for incoming connections
-    if (listen(*server_fd, MAX_CONNECTION_BACKLOG) < 0)
+    if (listen(*server_fd, MAX_CONNECTION_BACKLOG) < 0) {
+        close(*server_fd);
         handle_error("Server socket listening failed");
+    }
 
     printf("Listening for incoming connections on: %s, port: %d\n",
             inet_ntoa(server_addr->sin_addr), // Converts the ip address from network byte order to host byte order (not thread-safe)
@@ -28,6 +72,8 @@ void initialize_server(int *server_fd, struct sockaddr_in *server_addr, socklen_
 }
 
 void handle_peer_connections(int *peer_fd) {
+    char buffer[BUFFER_SIZE] = {0};
+
     int server_fd;
     struct sockaddr_in server_addr;
     socklen_t server_addr_size;
@@ -42,6 +88,8 @@ void handle_peer_connections(int *peer_fd) {
         close(*peer_fd);
         handle_error("Peer connection failed");
     }
+
+    handle_request(peer_fd);
 }
 
 int main() {
