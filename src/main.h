@@ -14,14 +14,13 @@
 #define PROTOCOL_NUMBER 0
 #define MAX_CONNECTION_BACKLOG 50
 #define LOOPBACK_ADDRESS inet_addr("127.0.0.1");
-#define PORT 8080;
+#define PORT 8080
 #define BUFFER_SIZE 1024
 #define INITIAL_BUFFER_SIZE 1024
 #define MAX_BUFFER_SIZE 1024 * 1024
 
-#define handle_error(message) do { perror(message); exit(EXIT_FAILURE); } while(0)
-
-enum {
+typedef enum {
+    ERR_UNKNOWN = -1,
     SUCCESS = 0,
     ERR_SOCKET = 1,
     ERR_BIND = 2,
@@ -30,7 +29,7 @@ enum {
     ERR_MALLOC = 5,
     ERR_REALLOC = 6,
     ERR_READ = 7,
-};
+} ErrorCode;
 
 typedef struct {
     int server_fd;
@@ -52,5 +51,42 @@ int initialize_server();
 int handle_peer_connections();
 int handle_request();
 int handle_response();
+void cleanup_server();
+
+static void handle_error(ErrorCode error_code) {
+    switch (error_code) {
+        case ERR_SOCKET:
+            printf("Error: Unable to create socket.\n");
+            break;
+        
+        case ERR_BIND:
+            printf("Error: Unable to bind socket.\n");
+            break;
+        
+        case ERR_LISTEN:
+            printf("Error: Unable to start listening for incoming connections.\n");
+            break;
+
+        case ERR_ACCEPT:
+            printf("Error: Unable to accept incoming connections.\n");
+            break;
+
+        case ERR_MALLOC:
+            printf("Error: Malloc was unable to allocate memory.\n");
+            break;
+
+        case ERR_REALLOC:
+            printf("Error: Realloc was unable to reallocate memory.\n");
+            break;
+
+        case ERR_READ:
+            printf("Error: Unable to read request buffer.\n");
+            break;
+
+        default:
+            printf("Error: An unknown error occurred.\n");
+            break;
+    }
+}
 
 #endif
