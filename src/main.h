@@ -47,11 +47,11 @@ typedef struct {
     size_t response_size;
 } peer_context_t;
 
-int initialize_server();
-int handle_peer_connections();
-int handle_request();
-int handle_response();
-void cleanup_server();
+int initialize_server(server_context_t *server_ctx, int port);
+int handle_peer_connections(server_context_t *server_ctx, peer_context_t *peer_ctx);
+int handle_request(peer_context_t *peer_ctx);
+int handle_response(peer_context_t *peer_ctx);
+void cleanup_server(server_context_t *server_ctx, peer_context_t *peer_ctx);
 
 static void handle_error(ErrorCode error_code) {
     switch (error_code) {

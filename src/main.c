@@ -67,7 +67,7 @@ int handle_request(peer_context_t *peer_ctx) {
     printf("MALLOC SUCCEEDED\n");
     printf("Request buffer allocated with size: %zu\n", peer_ctx->request_size);
     printf("Request buffer pointer: %p\n", (void *)peer_ctx->request_buffer);
-    printf("Contents of request buffer: \n%.*s\n", peer_ctx->request_buffer);
+    printf("Contents of request buffer: \n%.*s\n", (int)strlen(peer_ctx->request_buffer),peer_ctx->request_buffer);
 
     while ((bytes_read = read(peer_ctx->peer_fd, peer_ctx->request_buffer + total_bytes_read,
     peer_ctx->request_size - total_bytes_read)) > 0) {
