@@ -1,8 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "main.h"
-
 typedef enum {
     ERR_UNKNOWN = -1,
     SUCCESS = 0,

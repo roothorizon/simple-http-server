@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "utils.h"
 
 void handle_error(ErrorCode error_code) {

@@ -1,8 +1,10 @@
 #ifndef INIT_SERVER_H
 #define INIT_SERVER_H
 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
 #include "main.h"
-#include "utils.h"
 
 #define DOMAIN_IPV4 AF_INET
 #define PROTOCOL_TCP SOCK_STREAM
