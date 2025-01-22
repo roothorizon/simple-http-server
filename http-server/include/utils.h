@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define TIMESTAMP_SIZE 50
+
 typedef enum {
     ERR_UNKNOWN = -1,
     SUCCESS = 0,
@@ -14,5 +16,11 @@ typedef enum {
 } ErrorCode;
 
 void handle_error(ErrorCode error_code);
+
+void getDateTimeStamp(char *buffer, size_t size);
+
+void logMessage(const char *message);
+void logWarning(const char *message);
+void logError(const char *message);
 
 #endif
