@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "main.h"
+#include <stdlib.h>
 
 typedef enum {
     ERR_UNKNOWN = -1,
@@ -15,6 +15,15 @@ typedef enum {
     ERR_READ = 7,
 } ErrorCode;
 
+typedef struct {
+    char *base;
+    size_t size;
+    size_t used;
+} memory_arena_t;
+
 void handle_error(ErrorCode error_code);
+void arena_init(memory_arena_t *arena, size_t size);
+void arena_free(memory_arena_t *arena);
+void *arena_alloc(memory_arena_t *arena, size_t alloc_size);
 
 #endif

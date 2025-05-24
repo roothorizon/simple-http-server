@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 void handle_error(ErrorCode error_code) {
     switch (error_code) {
         case ERR_SOCKET:
@@ -34,4 +37,26 @@ void handle_error(ErrorCode error_code) {
             printf("Error: An unknown error occurred.\n");
             break;
     }
+}
+
+void arena_init(memory_arena_t *arena, size_t size) {
+    arena->base = malloc(size);
+    arena->size = size;
+    arena->used = 0;
+}
+
+void arena_free(memory_arena_t *arena) {
+    free(arena->base);
+    arena->base = NULL;
+    arena->size = 0;
+    arena->used = 0;
+}
+
+void *arena_alloc(memory_arena_t *arena, size_t alloc_size) {
+    if (arena->used + alloc_size > arena->size) {
+        return NULL;
+    }
+    void *ptr = arena->base + arena->used;
+    arena->used += alloc_size;
+    return ptr;
 }

@@ -1,71 +1,77 @@
 #include "connection_handler.h"
+#include "main.h"
+#include "utils.h"
 
-int handle_client_connections(server_context_t *server_ctx, client_context_t *client_ctx) {
-    printf("PEER CONNECTION CALLED\n");
+#include <stdio.h>
+#include <stdlib.h>
+
+void handle_client_connections(server_context_t *server_ctx, client_context_t *client_ctx) {
+    struct sockaddr_storage client_addr;
+    socklen_t client_addr_len = sizeof(client_addr);
+
     // Accept incoming connection
-    if ((client_ctx->client_fd = accept(server_ctx->server_fd,
-    (struct sockaddr *)&server_ctx->server_addr,
-    &server_ctx->server_addr_len)) < 0) {
-        close(client_ctx->client_fd);
-        printf("ERR_ACCEPT\n");
-        return ERR_ACCEPT;
+    client_ctx->client_fd = accept(server_ctx->server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+    if (client_ctx->client_fd == -1) {
+        cleanup_server(server_ctx, client_ctx);
+        perror("accept");
+        exit(EXIT_FAILURE);
     }
-    printf("PEER CONNECTION SUCCEEDED\n");
-    return SUCCESS;
 }
 
 int handle_request(client_context_t *client_ctx) {
-    printf("HANDLE REQUEST CALLED\n");
     ssize_t bytes_read;
     size_t total_bytes_read = 0;
 
-    client_ctx->request_buffer = (char *)malloc(INITIAL_BUFFER_SIZE);
-    if (client_ctx->request_buffer == NULL) {
+    arena_init(&client_ctx->arena, MEMORY_ARENA_SIZE);
+    if (!client_ctx->arena.base) {
         close(client_ctx->client_fd);
-        printf("ERR_MALLOC\n");
-        return ERR_MALLOC;
+        perror("arena_init");
+        return -1;
     }
-    client_ctx->request_size = INITIAL_BUFFER_SIZE;
-    printf("MALLOC SUCCEEDED\n");
-    printf("Request buffer allocated with size: %zu\n", client_ctx->request_size);
-    printf("Request buffer pointer: %p\n", (void *)client_ctx->request_buffer);
-    printf("Contents of request buffer: \n%.*s\n", (int)strlen(client_ctx->request_buffer),client_ctx->request_buffer);
+
+    client_ctx->request_buffer = (char *)arena_alloc(&client_ctx->arena, MEMORY_ARENA_SIZE);
+    if (!client_ctx->request_buffer) {
+        arena_free(&client_ctx->arena);
+        close(client_ctx->client_fd);
+        perror("arena_alloc");
+        return -1;
+    }
+
+    client_ctx->request_size = MEMORY_ARENA_SIZE;
 
     while ((bytes_read = read(client_ctx->client_fd, client_ctx->request_buffer + total_bytes_read,
     client_ctx->request_size - total_bytes_read)) > 0) {
         total_bytes_read += bytes_read;
-        printf("READ SUCCEEDED\n");
 
         if (total_bytes_read == client_ctx->request_size) {
-            size_t new_size = client_ctx->request_size * 2;
-            char *new_buffer = (char *)realloc(client_ctx->request_buffer, new_size);
-            if (new_buffer == NULL) {
-                free(client_ctx->request_buffer);
-                client_ctx->request_buffer = NULL;
-                close(client_ctx->client_fd);
-                printf("ERR_REALLOC\n");
-                return ERR_REALLOC;
-            }
-            client_ctx->request_buffer = new_buffer;
-            client_ctx->request_size = new_size;
-            printf("REALLOC SUCCEEDED\n");
+            printf("Request too large\n");
+            arena_free(&client_ctx->arena);
+            close(client_ctx->client_fd);
+            return -1;
         }
-        break;
     }
-    printf("WHILE LOOP SUCCEEDED\n");
 
     if (bytes_read < 0) {
+        arena_free(&client_ctx->arena);
         close(client_ctx->client_fd);
-        printf("ERR_READ\n");
-        return ERR_READ;
+        perror("Empty request");
+        return -1;
     }
 
-    printf("Received request:\n%s\n", client_ctx->request_buffer);
+    if (total_bytes_read < client_ctx->request_size) {
+        client_ctx->request_buffer[total_bytes_read] = '\0';
+    } else {
+        printf("Received request (not null-terminated):\n");
+        fwrite(client_ctx->request_buffer, 1, total_bytes_read, stdout);
+        printf("\n");
+    }
 
+    printf("Received request:\n%.*s\n", (int)total_bytes_read, client_ctx->request_buffer);
+
+    arena_free(&client_ctx->arena);
     close(client_ctx->client_fd);
-    return SUCCESS;
+    return 0;
     //Call handle response
-
     /*
     read(pper_ctx->peer_fd, &buffer, BUFFER_SIZE);
         printf("%.*s", BUFFER_SIZE, buffer);
@@ -95,10 +101,10 @@ int handle_request(client_context_t *client_ctx) {
                 send(peer_ctx->peer_fd, not_found, strlen(not_found), 0);
                 printf("%.*s", strlen(not_found), not_found);
             }
-        }*/
+        }
 
-    //close(peer_ctx->peer_fd);
-    //return SUCCESS;
+    close(peer_ctx->peer_fd);
+    return SUCCESS;*/
 }
 
 int handle_response(client_context_t *client_ctx) {

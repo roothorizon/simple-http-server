@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Iinclude -Wall -Werror
+CFLAGS = -std=c99 -Iinclude -Wall -Werror
 SRC = src/main.c \
 	  src/init_server.c \
 	  src/connection_handler.c \
