@@ -1,14 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <unistd.h>
-
-#include "utils.h"
 #include "init_server.h"
 
 #include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void init_server(server_context_t *server_ctx, int port) {
 

@@ -1,8 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#define TIMESTAMP_SIZE 50
 #include <stdlib.h>
+
+#define TIMESTAMP_SIZE 50
 
 typedef enum {
     ERR_UNKNOWN = -1,

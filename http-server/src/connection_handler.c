@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include "utils.h"
 #include "connection_handler.h"
 #include "main.h"
@@ -10,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void handle_client_connections(server_context_t *server_ctx, client_context_t *client_ctx) {
     struct sockaddr_storage client_addr;
