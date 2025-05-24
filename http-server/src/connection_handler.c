@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "utils.h"
 #include "connection_handler.h"
 #include "main.h"
 #include "utils.h"

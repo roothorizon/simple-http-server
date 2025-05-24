@@ -1,6 +1,9 @@
 #ifndef INIT_SERVER_H
 #define INIT_SERVER_H
 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
 #include "main.h"
 
 #include <arpa/inet.h>

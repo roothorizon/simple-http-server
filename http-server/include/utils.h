@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define TIMESTAMP_SIZE 50
 #include <stdlib.h>
 
 typedef enum {
@@ -25,5 +26,11 @@ void handle_error(ErrorCode error_code);
 void arena_init(memory_arena_t *arena, size_t size);
 void arena_free(memory_arena_t *arena);
 void *arena_alloc(memory_arena_t *arena, size_t alloc_size);
+
+void getDateTimeStamp(char *buffer, size_t size);
+
+void logMessage(const char *message);
+void logWarning(const char *message);
+void logError(const char *message);
 
 #endif

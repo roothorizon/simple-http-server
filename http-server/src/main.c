@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "main.h"
 #include "init_server.h"
 #include "connection_handler.h"
