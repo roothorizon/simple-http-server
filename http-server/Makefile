@@ -3,7 +3,8 @@ CFLAGS = -std=c99 -Iinclude -Wall -Werror
 SRC = src/main.c \
 	  src/init_server.c \
 	  src/connection_handler.c \
-	  src/utils.c
+	  src/utils.c \
+	  src/http_parser.c
 OBJ = $(SRC:.c=.o)
 TARGET = simple-http-server
 

@@ -2,12 +2,26 @@
 #define CONNECTION_HANDLER_H
 
 #include "main.h"
+#include "utils.h"
+#include "http_parser.h"
 
 #define MEMORY_ARENA_SIZE 4096
 #define MAX_MEMORE_ARENA_SIZE MEMORY_ARENA_SIZE * 1024
 
-void handle_client_connections(server_context_t *server_ctx, client_context_t *client_ctx);
-int handle_request(client_context_t *client_ctx);
-int handle_response(client_context_t *client_ctx);
+// ** Client struct
+typedef struct {
+    int client_fd;
+    struct sockaddr_in client_addr;
+    int client_addr_len;
+    memory_arena_t arena;
+    http_req_t *p_request;
+    http_res_t *p_response;
+} client_context_t;
+
+void handle_client_connections(server_context_t *p_server_ctx);
+int handle_request(client_context_t *p_client_ctx);
+int handle_response(client_context_t *p_client_ctx);
+int http_request_init(memory_arena_t *p_arena, http_req_t **pp_request);
+void cleanup_connection(client_context_t *p_client_ctx);
 
 #endif

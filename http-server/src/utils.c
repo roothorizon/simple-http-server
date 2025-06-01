@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void handle_error(ErrorCode error_code) {
+void handle_error(error_code_t error_code) {
     switch (error_code) {
         case ERR_SOCKET:
             printf("Error: Unable to create socket.\n");

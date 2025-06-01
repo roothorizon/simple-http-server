@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdlib.h>
+#include <stdio.h>
 
 #define TIMESTAMP_SIZE 50
 
@@ -15,7 +15,7 @@ typedef enum {
     ERR_MALLOC = 5,
     ERR_REALLOC = 6,
     ERR_READ = 7,
-} ErrorCode;
+} error_code_t;
 
 typedef struct {
     char *base;
@@ -23,7 +23,7 @@ typedef struct {
     size_t used;
 } memory_arena_t;
 
-void handle_error(ErrorCode error_code);
+void handle_error(error_code_t error_code);
 void arena_init(memory_arena_t *arena, size_t size);
 void arena_free(memory_arena_t *arena);
 void *arena_alloc(memory_arena_t *arena, size_t alloc_size);
