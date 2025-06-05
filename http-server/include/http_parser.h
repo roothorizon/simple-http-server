@@ -1,6 +1,7 @@
 #ifndef HTTP_PARSER_H
 #define HTTP_PARSER_H
 
+#include <stdint.h>
 #define MAX_HTTP_METHOD_LENGTH 16
 #define MAX_HTTP_PATH_LENGTH 4096
 #define MAX_HTTP_VERSION_LENGTH 16
@@ -48,7 +49,7 @@ typedef struct {
     http_method_t http_method;
 } http_method_pattern_t;
 
-void parse_http_request(http_req_t *p_http_request);
+uint16_t parse_http_request(http_req_t *p_http_request);
 void parse_req_line(http_req_t *p_http_request);
 void parse_req_headers(http_req_t *p_http_request);
 

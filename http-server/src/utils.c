@@ -64,24 +64,24 @@ void logError(const char *message) {
     printf("[%s ERROR]: %s\n", timeStamp, message);
 }
 
-void arena_init(memory_arena_t *arena, size_t size) {
-    arena->base = malloc(size);
-    arena->size = size;
-    arena->used = 0;
+void arena_init(memory_arena_t *p_arena, size_t size) {
+    p_arena->p_base = malloc(size);
+    p_arena->size = size;
+    p_arena->used = 0;
 }
 
-void arena_free(memory_arena_t *arena) {
-    free(arena->base);
-    arena->base = NULL;
-    arena->size = 0;
-    arena->used = 0;
+void arena_free(memory_arena_t *p_arena) {
+    free(p_arena->p_base);
+    p_arena->p_base = NULL;
+    p_arena->size = 0;
+    p_arena->used = 0;
 }
 
-void *arena_alloc(memory_arena_t *arena, size_t alloc_size) {
-    if (arena->used + alloc_size > arena->size) {
+void *arena_alloc(memory_arena_t *p_arena, size_t alloc_size) {
+    if (p_arena->used + alloc_size > p_arena->size) {
         return NULL;
     }
-    void *ptr = arena->base + arena->used;
-    arena->used += alloc_size;
+    void *ptr = p_arena->p_base + p_arena->used;
+    p_arena->used += alloc_size;
     return ptr;
 }

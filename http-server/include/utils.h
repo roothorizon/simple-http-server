@@ -18,20 +18,20 @@ typedef enum {
 } error_code_t;
 
 typedef struct {
-    char *base;
+    char *p_base;
     size_t size;
     size_t used;
 } memory_arena_t;
 
 void handle_error(error_code_t error_code);
-void arena_init(memory_arena_t *arena, size_t size);
-void arena_free(memory_arena_t *arena);
-void *arena_alloc(memory_arena_t *arena, size_t alloc_size);
+void arena_init(memory_arena_t *p_arena, size_t size);
+void arena_free(memory_arena_t *p_arena);
+void *arena_alloc(memory_arena_t *p_arena, size_t alloc_size);
 
-void getDateTimeStamp(char *buffer, size_t size);
+void getDateTimeStamp(char *p_buffer, size_t size);
 
-void logMessage(const char *message);
-void logWarning(const char *message);
-void logError(const char *message);
+void logMessage(const char *p_message);
+void logWarning(const char *p_message);
+void logError(const char *p_message);
 
 #endif

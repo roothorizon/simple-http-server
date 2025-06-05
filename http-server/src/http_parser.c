@@ -2,8 +2,12 @@
 
 #include <string.h>
 
-void parse_http_request(http_req_t *p_http_request) {
-    
+uint16_t parse_http_request(http_req_t *p_http_request) {
+    http_method_t http_method = parse_req_method(p_http_request);
+    if (http_method == GET) {
+        return 200;
+    }
+    return 404;
 }
 
 void parse_req_line(http_req_t *p_http_request) {
