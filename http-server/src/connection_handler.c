@@ -46,31 +46,36 @@ int handle_request(client_context_t *client_ctx) {
         return -1;
     }
 
-    while ((bytes_read = read(client_ctx->client_fd, client_ctx->p_request->p_request_buffer + total_bytes_read,
-    client_ctx->p_request->request_size - total_bytes_read)) > 0) {
+    char *pp_request_buffer = client_ctx->p_request->p_request_buffer;
+    size_t request_size = client_ctx->p_request->request_size;
+
+    while (1) {
+        /*
+         *  Reads the data into the request buffer, saves the amount of bytes read in bytes_read.
+         */
+        bytes_read = read(client_ctx->client_fd, pp_request_buffer + total_bytes_read, request_size - total_bytes_read);
+
+        if (bytes_read <= 0) {
+            arena_free(&client_ctx->arena);
+            close(client_ctx->client_fd);
+            printf("Error: bytes_read <= 0 or connection closed\n");
+            break;
+        }
+
         total_bytes_read += bytes_read;
+        pp_request_buffer[request_size] = '\0';
+
+        char *headers_end = strstr(client_ctx->p_request->p_request_buffer, "\r\n\r\n");
+        if (headers_end) {
+            break;
+        }
 
         if (total_bytes_read == client_ctx->p_request->request_size) {
             printf("Request too large\n");
             arena_free(&client_ctx->arena);
             close(client_ctx->client_fd);
-            return -1;
+            break;
         }
-    }
-
-    if (bytes_read <= 0) {
-        arena_free(&client_ctx->arena);
-        close(client_ctx->client_fd);
-        perror("Empty request\n");
-        return -1;
-    }
-
-    if (total_bytes_read < client_ctx->p_request->request_size) {
-        client_ctx->p_request->p_request_buffer[total_bytes_read] = '\0';
-    } else {
-        printf("Received request (not null-terminated):\n");
-        fwrite(client_ctx->p_request->p_request_buffer, 1, total_bytes_read, stdout);
-        printf("\n");
     }
 
     printf("Received request:\n%.*s\n", (uint32_t)total_bytes_read, client_ctx->p_request->p_request_buffer);
@@ -80,7 +85,7 @@ int handle_request(client_context_t *client_ctx) {
     if (request_status == 200) {
         const char *status_line = "HTTP/1.1 200 OK\r\n";
         const char *content_type = "Content-Type: text/html\r\n";
-        const char *content_length = "Content-Length: 55\r\n";
+        const char *content_length = "Content-Length: 92\r\n";
         const char *empty_line = "\r\n";
         const char *body = "<html><body><h1>Hello, World!</h1><br><p>Received a successful GET request</p></body></html>";
 
@@ -92,7 +97,7 @@ int handle_request(client_context_t *client_ctx) {
     } else {
         const char *status_line = "HTTP/1.1 404 Not Found\r\n";
         const char *content_type = "Content-Type: text/html\r\n";
-        const char *content_length = "Content-Length: 55\r\n";
+        const char *content_length = "Content-Length: 53\r\n";
         const char *empty_line = "\r\n";
         const char *body = "<html><body><h1>Not a GET request!</h1></body></html>";
 
