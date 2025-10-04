@@ -1,7 +1,9 @@
 #ifndef HTTP_PARSER_H
 #define HTTP_PARSER_H
 
+#include <stdio.h>
 #include <stdint.h>
+
 #define MAX_HTTP_METHOD_LENGTH 16
 #define MAX_HTTP_PATH_LENGTH 4096
 #define MAX_HTTP_VERSION_LENGTH 16
@@ -9,8 +11,6 @@
 #define SPACE ' '
 #define CR '\r'
 #define LF '\n'
-
-#include <stdio.h>
 
 typedef enum {
     GET,

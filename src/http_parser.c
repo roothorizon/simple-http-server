@@ -1,6 +1,6 @@
-#include "http_parser.h"
-
 #include <string.h>
+
+#include "http_parser.h"
 
 uint16_t parse_http_request(http_req_t *p_http_request) {
     http_method_t http_method = parse_req_method(p_http_request);

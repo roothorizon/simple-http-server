@@ -1,10 +1,10 @@
-#include "init_server.h"
-
 #include <stdint.h>
 #include <sys/socket.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include "init_server.h"
 
 void init_server(server_context_t *p_server_ctx, uint16_t port) {
 

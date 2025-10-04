@@ -1,9 +1,9 @@
+#include <stdio.h>
+#include <unistd.h>
+
 #include "main.h"
 #include "connection_handler.h"
 #include "init_server.h"
-
-#include <stdio.h>
-#include <unistd.h>
 
 int main() {
     server_context_t server_ctx;

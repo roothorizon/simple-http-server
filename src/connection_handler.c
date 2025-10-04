@@ -1,13 +1,13 @@
-#include "utils.h"
-#include "connection_handler.h"
-#include "main.h"
-#include "utils.h"
-
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+
+#include "utils.h"
+#include "connection_handler.h"
+#include "main.h"
+#include "utils.h"
 
 void handle_client_connections(server_context_t *p_server_ctx) {
     client_context_t client_ctx;

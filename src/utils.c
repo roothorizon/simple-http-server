@@ -1,8 +1,8 @@
-#include "utils.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+#include "utils.h"
 
 void handle_error(error_code_t error_code) {
     switch (error_code) {
