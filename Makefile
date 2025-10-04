@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c99 -Iinclude -Wall -Werror
 DEBUG_FLAGS = -g
 SRC = src/main.c \
-	  src/init_server.c \
+	  src/server.c \
 	  src/connection_handler.c \
 	  src/utils.c \
 	  src/http_parser.c
