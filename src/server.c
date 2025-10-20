@@ -5,9 +5,9 @@
 
 #include "server.h"
 
-struct http_server_s* http_server_init(const int port) {
+http_server_t* http_server_init(const int port) {
 
-    struct http_server_s* http_server = malloc(sizeof(struct http_server_s));
+    http_server_t* http_server = malloc(sizeof(http_server_t));
 
     if (http_server == NULL) {
         perror("Error malloc");
@@ -25,7 +25,7 @@ struct http_server_s* http_server_init(const int port) {
     return http_server;
 }
 
-int create_socket(struct http_server_s *p_http_server) {
+int create_socket(http_server_t *p_http_server) {
 
     p_http_server->server_fd = socket(AF_IPV4, PROTOCOL_TCP, PROTOCOL_NUMBER_TCP);
     if (p_http_server->server_fd == -1) {
@@ -36,7 +36,7 @@ int create_socket(struct http_server_s *p_http_server) {
     return 0;
 }
 
-int bind_socket(struct http_server_s *p_http_server) {
+int bind_socket(http_server_t *p_http_server) {
 
     int bind_status = bind(p_http_server->server_fd, (struct sockaddr *)&p_http_server->server_addr, p_http_server->server_addr_len);
 
@@ -48,7 +48,7 @@ int bind_socket(struct http_server_s *p_http_server) {
     return 0;
 }
 
-int listen_socket(struct http_server_s *p_http_server) {
+int listen_socket(http_server_t *p_http_server) {
 
     int listen_status = listen(p_http_server->server_fd, MAX_CONNECTION_BACKLOG);
 
@@ -60,7 +60,7 @@ int listen_socket(struct http_server_s *p_http_server) {
     return 0;
 }
 
-int http_server_listen(struct http_server_s *p_http_server) {
+int http_server_listen(http_server_t *p_http_server) {
 
     int create_socket_status = create_socket(p_http_server);
     int bind_socket_status = bind_socket(p_http_server);
@@ -80,7 +80,7 @@ int http_server_listen(struct http_server_s *p_http_server) {
     return 0;
 }
 
-void cleanup_server(struct http_server_s *p_http_server) {
+void cleanup_server(http_server_t *p_http_server) {
 
     if (p_http_server->server_fd >= 0) {
         close(p_http_server->server_fd);
