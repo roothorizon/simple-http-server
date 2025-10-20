@@ -16,11 +16,11 @@ struct http_server_s* http_server_init(const int port) {
 
     struct sockaddr_in *p_server_addr = &http_server->server_addr;
 
-    memset(&p_server_addr, 0, sizeof(p_server_addr));
+    memset(p_server_addr, 0, sizeof(*p_server_addr));
     p_server_addr->sin_family = AF_IPV4;
     p_server_addr->sin_addr.s_addr = inet_addr(DEFAULT_IP_ADDR);
     p_server_addr->sin_port = htons(port);
-    http_server->server_addr_len = sizeof(p_server_addr);
+    http_server->server_addr_len = sizeof(*p_server_addr);
 
     return http_server;
 }
