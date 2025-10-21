@@ -1,19 +1,20 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "http_parser.h"
 
-uint16_t parse_http_request(http_req_t *p_http_request) {
-    http_method_t http_method = parse_req_method(p_http_request);
+int parse_http_request(http_request_t *p_http_request) {
+    enum http_method_e http_method = parse_request_method(p_http_request);
     if (http_method == GET) {
-        http_path_t http_path = parse_req_path(p_http_request);
-        printf("The size of the http path is %zu\n", http_path.path_len);
+        p_http_request->http_parser.p_http_path = parse_request_path(p_http_request);
+        printf("The size of the http path is %zu\n", p_http_request->http_parser.http_path_len);
         parse_http_version(p_http_request);
         return 200;
     }
     return 404;
 }
 
-http_method_t parse_req_method(http_req_t *p_http_request) {
+enum http_method_e parse_request_method(http_request_t *p_http_request) {
     size_t max_method_len = MAX_HTTP_METHOD_LENGTH;
 
     if (p_http_request == NULL ||
@@ -26,7 +27,13 @@ http_method_t parse_req_method(http_req_t *p_http_request) {
     char *p_method = p_http_request->p_request_buffer;
     size_t method_size = 0;
 
-    http_method_pattern_t a_patterns[] = {
+    struct http_method_pattern_s {
+        char *p_pattern;
+        size_t length;
+        enum http_method_e http_method;
+    };
+
+    struct http_method_pattern_s a_patterns[] = {
         { "GET", 3, GET},
         { "HEAD", 4, HEAD},
         { "POST", 4, POST},
@@ -58,7 +65,7 @@ http_method_t parse_req_method(http_req_t *p_http_request) {
                     memcmp(p_method, a_patterns[j].p_pattern, a_patterns[j].length) == 0) {
 
                     // ** Set the path pointer to the first character of the request line's path
-                    p_http_request->http_method_len = method_size;
+                    p_http_request->http_parser.p_http_path = p_method + method_size;
                     
                     return a_patterns[j].http_method;
                 }
@@ -67,19 +74,19 @@ http_method_t parse_req_method(http_req_t *p_http_request) {
         }
     }
 
-    p_http_request->http_path.p_path = NULL;
+    p_http_request->http_parser.p_http_path = NULL;
     return UNKNOWN_METHOD;
 }
 
-http_path_t parse_req_path(http_req_t *p_http_request) {
+char* parse_request_path(http_request_t *p_http_request) {
     size_t max_path_len = MAX_HTTP_PATH_LENGTH;
     http_path_t http_path;
     http_path.path_len = 0;
 
     if (p_http_request == NULL ||
         p_http_request->p_request_buffer == NULL) {
-            http_path.p_path = NULL;
-            return http_path;
+            p_http_request->http_parser.p_http_path = NULL;
+            return "/index.html";
         }
         
     if (max_path_len > p_http_request->request_size) {
