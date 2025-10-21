@@ -4,37 +4,34 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "main.h"
 #include "utils.h"
-#include "connection_handler.h"
+#include "connection.h"
 
-void handle_client_connections(server_context_t *p_server_ctx) {
-    client_context_t client_ctx;
-    client_ctx.client_addr_len = sizeof(client_ctx.client_addr);
-
-    // ** Accept incoming connection
-    client_ctx.client_fd = accept(p_server_ctx->server_fd, (struct sockaddr *)&client_ctx.client_addr, &client_ctx.client_addr_len);
-    if (client_ctx.client_fd == -1) {
-        cleanup_server(p_server_ctx);
+int accept_connections(http_server_t *p_http_server) {
+    
+    http_request_t http_request;
+    http_request.http_server = p_http_server;
+    http_request.request_addr_len = sizeof(http_request.request_addr);
+    http_request.request_fd = accept(p_http_server->server_fd,
+        (struct sockaddr *)&http_request.request_addr,
+        &http_request.request_addr_len);
+    
+    if (http_request.request_fd == -1) {
         perror("accept");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     printf("Received connection from: %s, port: %d\n",
-            inet_ntoa(client_ctx.client_addr.sin_addr), // ** Converts the ip address from network byte order to host byte order (not thread-safe)
-            ntohs(client_ctx.client_addr.sin_port)); // ** Converts the port number from network byte order to host byte order
+            inet_ntoa(http_request.request_addr.sin_addr),
+            ntohs(http_request.request_addr.sin_port));
 
-    arena_init(&client_ctx.arena, MEMORY_ARENA_SIZE);
-    if (client_ctx.arena.p_base == NULL) {
-        close(client_ctx.client_fd);
-        perror("arena_init");
-        exit(-1);
-    }
-    memset(client_ctx.arena.p_base, 0, client_ctx.arena.size);
+    handle_request(&http_request);
 
-    handle_request(&client_ctx);
+    return 0;
 }
 
-int handle_request(client_context_t *client_ctx) {
+int handle_request(http_request_t *p_http_request) {
     ssize_t bytes_read;
     size_t total_bytes_read = 0;
 

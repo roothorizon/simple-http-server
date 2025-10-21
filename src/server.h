@@ -14,6 +14,7 @@ int create_socket(http_server_t *p_http_server);
 int bind_socket(http_server_t *p_http_server);
 int listen_socket(http_server_t *p_http_server);
 int http_server_listen(http_server_t *p_http_server);
+int run_server_loop(http_server_t *p_http_server);
 void cleanup_server(http_server_t *p_http_server);
 
 #endif

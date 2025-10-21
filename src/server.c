@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "server.h"
+#include "connection.h"
 
 http_server_t* http_server_init(const int port) {
 
@@ -77,6 +78,16 @@ int http_server_listen(http_server_t *p_http_server) {
             inet_ntoa(p_http_server->server_addr.sin_addr),
             ntohs(p_http_server->server_addr.sin_port));
 
+    return 0;
+}
+
+int run_server_loop(http_server_t *p_http_server) {
+    http_server_listen(p_http_server);
+    
+    while (1) {
+        accept_connections(p_http_server);
+    }
+    
     return 0;
 }
 

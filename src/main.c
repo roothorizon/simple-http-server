@@ -11,7 +11,7 @@ int main() {
         return 1;
     }
 
-    http_server_listen(http_server);
+    run_server_loop(http_server);
 
     return 0;
 }
