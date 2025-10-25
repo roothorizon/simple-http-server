@@ -1,6 +1,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#define DEFAULT_HTTP_REQUEST_SIZE 1024
+#define DEFAULT_HTTP_RESPONSE_SIZE 1024
+#define MAX_HTTP_METADATA_SIZE 8192
+#define MAX_HTTP_BODY_SIZE 8388608
+#define MAX_MEM_USAGE 4294967296
+
 #include <arpa/inet.h>
 
 typedef struct {
